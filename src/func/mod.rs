@@ -14,7 +14,11 @@ pub fn run(args: Args) -> Result<(), Box<dyn Error>> {
         Ok(content) => content,
     };
 
-    let results = search(&args.query, &file_content);
+    let results = if args.ignore_case {
+        case_insensitive_search(&args.query, &file_content)
+    } else {
+        case_sensitive_search(&args.query, &file_content)
+    };
 
     for result in results {
         println!("{}", result);
@@ -22,11 +26,24 @@ pub fn run(args: Args) -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn search<'a>(query: &str, content: &'a str) -> Vec<&'a str> {
+pub fn case_sensitive_search<'a>(query: &str, content: &'a str) -> Vec<&'a str> {
     let mut to_return = Vec::new();
 
     for line in content.lines() {
         if line.contains(query) {
+            to_return.push(line);
+        }
+    }
+
+    to_return
+}
+
+pub fn case_insensitive_search<'a>(query: &str, content: &'a str) -> Vec<&'a str> {
+    let query = query.to_lowercase();
+    let mut to_return = Vec::new();
+
+    for line in content.lines() {
+        if line.to_lowercase().contains(&query) {
             to_return.push(line);
         }
     }

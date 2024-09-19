@@ -1,6 +1,9 @@
+use std::env;
+
 pub struct Args {
     pub query: String,
     pub file_path: String,
+    pub ignore_case: bool,
 }
 
 impl Args {
@@ -12,6 +15,12 @@ impl Args {
         let query = args[1].clone();
         let file_path = args[2].clone();
 
-        Ok(Args { query, file_path })
+        let ignore_case = env::var("IGNORE_CASE").is_ok();
+
+        Ok(Args {
+            query,
+            file_path,
+            ignore_case,
+        })
     }
 }
